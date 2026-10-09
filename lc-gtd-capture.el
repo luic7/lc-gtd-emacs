@@ -1,44 +1,29 @@
-(defvar lc-gtd-directory "~/lc-gtd/"
-  "Directory holding the GTD files (inbox.org, org-gtd-tasks.org, ...).")
+;; (load-file "./lc-gtd-utils.el")
 
 (defun lc-gtd-capture--template ()
   "Bare capture template: no fixed text, just a heading, filed into inbox.org."
   (list "g" "GTD capture" 'entry
-        (list 'file (expand-file-name "inbox.org" lc-gtd-directory))
-        "* TODO %?"
+        (list 'file (lc-gtd--path lc-gtd-inbox-file))
+        "* TODO %?\nCAPTURED: %U"
 	:after-finalize #'lc-gtd-capture--delete-frame))
-
-(defun lc-gtd-capture-schedule-today ()
-  "Schedule the item being captured for today."
-  (interactive)
-  (org-schedule nil "+0"))
-
-(defun lc-gtd-capture--refile-to-file (file)
-  "Refile the heading at point to the top level of FILE, then save FILE.
-FILE is relative to `lc-gtd-directory'."
-  (let ((path (expand-file-name file lc-gtd-directory)))
-    (org-refile nil nil (list file path nil nil))
-    (when-let ((buf (find-buffer-visiting path)))
-      (with-current-buffer buf (save-buffer)))))
 
 (defun lc-gtd-capture-done ()
   "Finish the capture; move it to org-gtd-tasks.org if it is scheduled.
 Unscheduled items stay in inbox.org."
   (interactive)
   (when (org-get-scheduled-time (point))
-    (lc-gtd-capture--refile-to-file "org-gtd-tasks.org"))
+    (lc-gtd-refile-to-file lc-gtd-tasks-file))
   (org-capture-finalize))
 
 (defvar-keymap lc-gtd-capture-mode-map
   :doc "Keymap for `lc-gtd-capture-mode'."
   "<f8>" #'lc-gtd-capture-done
-  "<f7>" #'lc-gtd-capture-schedule-today
+  "<f7>" #'lc-gtd-schedule-today
   "<f6>" #'org-schedule
   "<f5>" #'org-capture-kill)
 
 (define-minor-mode lc-gtd-capture-mode
   "Minor mode for processing GTD capture items."
-  :init-value nil
   :lighter " gtd-c"
   :keymap lc-gtd-capture-mode-map
   (when lc-gtd-capture-mode
@@ -47,7 +32,7 @@ Unscheduled items stay in inbox.org."
            (concat "\\<lc-gtd-capture-mode-map>"
                    "\\[org-capture-kill]: cancel   "
                    "\\[org-schedule]: schedule   "
-                   "\\[lc-gtd-capture-schedule-today]: today   "
+                   "\\[lc-gtd-schedule-today]: today   "
                    "\\[lc-gtd-capture-done]: done")))))
 
 

@@ -4,6 +4,9 @@ A simplified reimplementation of org-gtd, written as a way for me to learn
 Emacs Lisp. The original is at /home/luis/dev/org-gtd.el. Use it as a
 reference only and never modify it.
 
+You can reference the org source code in /home/luis/utils/emacs/lisp/org for help with org-mode
+functions.
+
 ## Learning Mode
 I'm learning Elisp, so:
 - Explain new Elisp concepts (macros, lexical scope, org-element API, etc.)
@@ -16,14 +19,9 @@ I'm learning Elisp, so:
 ## Milestones
 1. Capture: quickly add an item to the inbox
 2. Inbox processing: go through inbox items one at a time and clarify each
-3. Destinations for clarified items:
-   - Next Actions (single actions, no date)
-   - Projects (multi-step outcomes, each with a next action)
-   - Waiting For (delegated)
-   - Calendar (date/time-specific)
-   - Someday/Maybe
-   - Reference
-   - Trash
+3. Setup org-agenda view.
+   - Agenda view should hold the TODO's under our org-gtd-tasks.org
+   - Agenda view should refile DONE task to the archive file and save both the source and dest org files
 4. Weekly Review: walk through lists to prune, update, and reorganize
 
 Work on one milestone at a time, in order. The user may also specify what they're working on to refocus.
