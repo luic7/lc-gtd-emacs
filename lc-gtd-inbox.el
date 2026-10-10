@@ -28,6 +28,7 @@ Items without a scheduled date count as someday/maybe."
 (defun lc-gtd-inbox-trash ()
   "Mark the heading at point CNCL and move it to the archive file."
   (interactive)
+  (while (org-up-heading-safe))
   (org-todo "CNCL")
   (lc-gtd-move-to lc-gtd-archive-file))
 

@@ -243,3 +243,47 @@ unscheduled in org-gtd-tasks.org**
 **Next step**
 - User picks answers for the gaps above, then we agree on an approach
   before any code. Projects aren't in the CLAUDE.md milestone list yet.
+
+## 2026-10-09 — Projects: statistics cookie on capture and inbox
+
+**What changed**
+- `lc-gtd-utils.el`: `lc-gtd--is-project` (climb to the top heading, then
+  `org-goto-first-child`) and `lc-gtd-insert-statistics` (adds ` [/]` to
+  the top heading if it's a project). `lc-gtd-move-to` calls it before
+  refiling. `lc-gtd-projects.el` is now just a comment.
+- `lc-gtd-capture.el`: `lc-gtd-capture-done` calls it before the scheduled
+  check, and the template has `:before-finalize #'lc-gtd-insert-statistics`.
+
+**Decisions**
+- `org-capture-finalize` runs `org-update-checkbox-count`, which rewrites
+  the cookie to `[0/0]` on unscheduled projects (no checkboxes). Fix: run
+  the helper again from the template's `:before-finalize`, which runs after
+  that recount. Rejected `:COOKIE_DATA: todo` (user: the drawer clutters
+  entries) and "cookie only when filing into tasks" (a parent-scheduled
+  project with point on a subtask wasn't refiled).
+- The helper has no `save-excursion` on purpose: leaving point on the
+  project heading is what makes the inbox commands move the whole project.
+- User's style choices (don't re-suggest): `lc-gtd--is-project` name,
+  docstring wording, cookie regexp without the `%` form.
+
+**Elisp concepts**
+- `save-excursion`; `while` with an empty body (`org-up-heading-safe`);
+  `string-match-p` and doubled backslashes in regexps;
+  `org-edit-headline`; capture template hooks and their order
+  (recount → `:before-finalize` → save → `:after-finalize`).
+
+**Open / next step**
+- Done: the recount now sits outside the `unless` in
+  `lc-gtd-insert-statistics`. Batch-tested 20 capture/inbox/agenda cases;
+  every project gets one correct cookie, lone tasks get none.
+- Inbox F5 on a subtask marks only that subtask CNCL but archives the
+  whole project (same cause as the agenda item below).
+- Agenda F8 on a project subtask now archives the whole project (point
+  moves to the parent inside `lc-gtd-move-to`). Decide what F8 should do
+  for subtasks; simplest fix is calling the helper from the inbox commands
+  instead of `lc-gtd-move-to`.
+- Capture F8 with only a subtask scheduled leaves the project in the
+  inbox (the scheduled check reads the project heading).
+- `(load-file "./lc-gtd-utils.el")` is uncommented in `lc-gtd-capture.el`;
+  init.el loads that file, so the relative path depends on where Emacs
+  started.

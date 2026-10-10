@@ -34,15 +34,18 @@ FILE is relative to `lc-gtd-directory'."
     (when-let ((buf (find-buffer-visiting path)))
       (with-current-buffer buf (save-buffer)))))
 
-(defun lc-gtd-move-to (file)
-  "Refile the heading at point to FILE, then save the current buffer.
-Saves both ends of the move.  FILE is relative to `lc-gtd-directory'."
-  (lc-gtd-refile-to-file file)
-  (save-buffer))
-
 (defun lc-gtd-insert-statistics ()
   "Inserts statitics if it's a projects"
   (when (lc-gtd--is-project)
     (while (org-up-heading-safe))
-    (org-edit-headline (concat (org-get-heading t t t t) " [/]"))
+    (unless (string-match-p "\\[[0-9]*/[0-9]*\\]" (org-get-heading t t t t))
+      (org-edit-headline (concat (org-get-heading t t t t) " [/]")))
     (org-update-statistics-cookies nil)))
+
+(defun lc-gtd-move-to (file)
+  "Refile the heading at point to FILE, then save the current buffer.
+Saves both ends of the move.  FILE is relative to `lc-gtd-directory'."
+  (lc-gtd-insert-statistics)
+  (lc-gtd-refile-to-file file)
+  (save-buffer))
+

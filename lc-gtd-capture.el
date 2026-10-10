@@ -1,16 +1,18 @@
-;; (load-file "./lc-gtd-utils.el")
+(load-file "./lc-gtd-utils.el")
 
 (defun lc-gtd-capture--template ()
   "Bare capture template: no fixed text, just a heading, filed into inbox.org."
   (list "g" "GTD capture" 'entry
         (list 'file (lc-gtd--path lc-gtd-inbox-file))
         "* TODO %?\nCAPTURED: %U"
+	:before-finalize #'lc-gtd-insert-statistics
 	:after-finalize #'lc-gtd-capture--delete-frame))
 
 (defun lc-gtd-capture-done ()
   "Finish the capture; move it to org-gtd-tasks.org if it is scheduled.
 Unscheduled items stay in inbox.org."
   (interactive)
+  (lc-gtd-insert-statistics)
   (when (org-get-scheduled-time (point))
     (lc-gtd-refile-to-file lc-gtd-tasks-file))
   (org-capture-finalize))
