@@ -287,3 +287,26 @@ unscheduled in org-gtd-tasks.org**
 - `(load-file "./lc-gtd-utils.el")` is uncommented in `lc-gtd-capture.el`;
   init.el loads that file, so the relative path depends on where Emacs
   started.
+
+**Later the same day: agenda F8 and projects**
+- Rule (user): completing a subtask doesn't archive it; the project is
+  archived only when the parent is complete.
+- `lc-gtd-agenda-done` now marks DONE, climbs to the top heading, and
+  archives only if that heading is done. A lone task is its own top
+  heading, so it still archives. This replaces the "agenda F8 archives the
+  whole project" item above.
+- User chose manual parent completion (F8 on the parent) over
+  auto-completing it after the last subtask. Catch: an unscheduled parent
+  never shows in the agenda. `lc-gtd--children-done-p` (in
+  `lc-gtd-agenda.el`) is written but unused; it's the piece for the
+  automatic version.
+- The not-archived path does `(save-buffer)`, so completing a subtask
+  saves the tasks file. Batch-tested 5 cases, all pass with enforcement on.
+- Relies on `org-enforce-todo-dependencies` being active: without it, F8
+  on a parent with an open child marks it DONE and archives it. `org-todo`
+  called from Lisp doesn't signal when blocked, it just messages.
+- `load-file` → `require`/`provide` + `load-path` (+ optional umbrella
+  `lc-gtd.el`) was proposed and deferred by the user.
+  `lc-gtd-agenda.el` now also has a relative `load-file` line.
+- New concepts: `progn`, `org-goto-sibling`, `org-entry-is-done-p`,
+  `org-entry-blocked-p`, `org-after-todo-statistics-hook`.

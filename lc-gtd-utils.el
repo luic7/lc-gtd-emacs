@@ -15,7 +15,7 @@
   "Return the absolute path of FILE inside `lc-gtd-directory'."
   (expand-file-name file lc-gtd-directory))
 
-(defun lc-gtd--is-project ()
+(defun lc-gtd--is-project-p ()
   "Checks if an entry is a project"
   (save-excursion
     (while (org-up-heading-safe))
@@ -36,7 +36,7 @@ FILE is relative to `lc-gtd-directory'."
 
 (defun lc-gtd-insert-statistics ()
   "Inserts statitics if it's a projects"
-  (when (lc-gtd--is-project)
+  (when (lc-gtd--is-project-p)
     (while (org-up-heading-safe))
     (unless (string-match-p "\\[[0-9]*/[0-9]*\\]" (org-get-heading t t t t))
       (org-edit-headline (concat (org-get-heading t t t t) " [/]")))
