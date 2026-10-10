@@ -1,4 +1,4 @@
-;; (load-file "./lc-gtd-utils.el")
+(require 'lc-gtd-utils)
 
 (defvar-keymap lc-gtd-inbox-mode-map
   :doc "Keymap for `lc-gtd-inbox-mode'."
@@ -61,3 +61,5 @@ Items without a scheduled date count as someday/maybe."
       (find-file (lc-gtd--path lc-gtd-inbox-file))
       (delete-other-windows)
       (lc-gtd-inbox-mode))))
+
+(provide 'lc-gtd-inbox)

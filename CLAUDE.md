@@ -1,8 +1,7 @@
 ## Project Overview
 
 A simplified reimplementation of org-gtd, written as a way for me to learn
-Emacs Lisp. The original is at /home/luis/dev/org-gtd.el. Use it as a
-reference only and never modify it.
+Emacs Lisp. 
 
 You can reference the org source code in /home/luis/utils/emacs/lisp/org for help with org-mode
 functions.
@@ -31,7 +30,7 @@ in those cases point them out and suggest any refactors.
 
 ## Session Notes
 Keep a running log in `NOTES.md` so the next session can pick up where this one left off.
-- Read `NOTES.md` at the start of every session before doing anything else
+- Read `NOTES.md` at the start of every session before doing anything else if you need more context to answer the prompt
 - At the end of each session, or after any significant decision, append an entry with:
   - Date and milestone being worked on
   - What changed (files, functions added or modified)

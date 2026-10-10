@@ -1,4 +1,3 @@
-
 (defvar lc-gtd-directory "~/lc-gtd/"
   "Directory holding the GTD files (inbox.org, org-gtd-tasks.org, ...).")
 
@@ -15,11 +14,31 @@
   "Return the absolute path of FILE inside `lc-gtd-directory'."
   (expand-file-name file lc-gtd-directory))
 
-(defun lc-gtd--is-project ()
+(defun lc-gtd--is-project-p ()
   "Checks if an entry is a project"
   (save-excursion
     (while (org-up-heading-safe))
     (org-goto-first-child)))
+
+(defun lc-gtd--schedule-next ()
+  "If the heading at point is a subtask, offer to schedule the next one.
+Moves point to that next subtask when there is one."
+  (when (and (> (org-current-level) 1)
+             (org-goto-sibling)
+             (org-entry-is-todo-p)
+             (y-or-n-p (format "Schedule \"%s\"? " (org-get-heading t t t t))))
+    (org-schedule nil)))
+
+(defun lc-gtd--cancel-subtasks ()
+  "Mark every open subtask of the heading at point CNCL.
+Org won't close a heading while it has open subtasks, so cancelling a
+project starts here."
+  (save-excursion
+    (let ((more (org-goto-first-child)))
+      (while more
+        (when (org-entry-is-todo-p)
+          (org-todo "CNCL"))
+        (setq more (org-goto-sibling))))))
 
 (defun lc-gtd-schedule-today ()
   "Schedule the heading at point for today."
@@ -36,7 +55,7 @@ FILE is relative to `lc-gtd-directory'."
 
 (defun lc-gtd-insert-statistics ()
   "Inserts statitics if it's a projects"
-  (when (lc-gtd--is-project)
+  (when (lc-gtd--is-project-p)
     (while (org-up-heading-safe))
     (unless (string-match-p "\\[[0-9]*/[0-9]*\\]" (org-get-heading t t t t))
       (org-edit-headline (concat (org-get-heading t t t t) " [/]")))
@@ -49,3 +68,4 @@ Saves both ends of the move.  FILE is relative to `lc-gtd-directory'."
   (lc-gtd-refile-to-file file)
   (save-buffer))
 
+(provide 'lc-gtd-utils)

@@ -1,4 +1,4 @@
-(load-file "./lc-gtd-utils.el")
+(require 'lc-gtd-utils)
 
 (defun lc-gtd-capture--template ()
   "Bare capture template: no fixed text, just a heading, filed into inbox.org."
@@ -61,4 +61,10 @@ Runs from the capture template's `:after-finalize'."
     (with-selected-frame frame
       (org-capture nil "g")
       (delete-other-windows)
+      ;; The capture buffer clones inbox.org's buffer, modes included, so
+      ;; it can inherit `lc-gtd-inbox-mode', whose keys would win over ours.
+      (when (bound-and-true-p lc-gtd-inbox-mode)
+        (lc-gtd-inbox-mode -1))
       (lc-gtd-capture-mode))))
+
+(provide 'lc-gtd-capture)
