@@ -718,3 +718,30 @@ request)**
   macro would switch back to the old frame afterwards.
 - Concepts: `seq-find`, `frame-parameter`, `or` as "first non-nil",
   `if-let*` (discussed as the alternative).
+
+**2026-10-21 (Milestone 3): only clear windows in a new agenda frame**
+- `lc-gtd-agenda`: binds `existing` to `(lc-gtd-agenda--frame)` before
+  focusing, and only calls `delete-other-windows` `(unless existing)`.
+  Merged both bindings into one `let`.
+- Why: a reused frame keeps the user's layout. `org-agenda-prepare-window`
+  just selects the agenda window if it's already shown, so no extra split.
+  Edge case: if that frame now shows another buffer, the default
+  `reorganize-frame` will split it. Alternative if that's annoying: check
+  whether the agenda buffer is visible instead of whether the frame existed.
+- Concepts: capture a value before `or` loses which branch produced it;
+  `unless`.
+
+**2026-10-21 (Milestone 3): focus a newly made agenda frame**
+- Bug: calling `lc-gtd-agenda` from another frame made the new frame but
+  didn't focus it (GNOME Wayland, X11 Emacs via XWayland).
+- Cause: `make-frame` waits only `x-wait-for-event-timeout` (0.1 s) for
+  MapNotify; the frame isn't marked visible yet, and `x_ewmh_activate_frame`
+  (xterm.c) only sends the focus request for visible frames.
+- Fix: let-bind `x-wait-for-event-timeout` to 1.0 around `make-frame`
+  (an upper bound, not a fixed delay).
+- Fallback if it still fails: Mutter focus-stealing prevention.
+- Concepts: `let` on a special variable = dynamic binding, also seen by C
+  code called inside it.
+- Reverted the same day at the user's request: the
+  `x-wait-for-event-timeout` binding is gone, so a new agenda frame may
+  again not get focus. Diagnosis above still applies if we revisit it.

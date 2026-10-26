@@ -3,8 +3,8 @@
 (defun lc-gtd-capture--template ()
   "Bare capture template: no fixed text, just a heading, filed into inbox.org."
   (list "g" "GTD capture" 'entry
-        (list 'file (lc-gtd--path lc-gtd-inbox-file))
-        "* TODO %?\nCAPTURED: %U"
+	(list 'file (lc-gtd--path lc-gtd-inbox-file))
+	"* TODO %?\nCAPTURED: %U"
 	:before-finalize #'lc-gtd-insert-statistics
 	:after-finalize #'lc-gtd-capture--delete-frame))
 
@@ -30,19 +30,19 @@ Unscheduled items stay in inbox.org."
   :keymap lc-gtd-capture-mode-map
   (when lc-gtd-capture-mode
     (setq header-line-format
-          (substitute-command-keys
-           (concat "\\<lc-gtd-capture-mode-map>"
-                   "\\[org-capture-kill]: cancel   "
-                   "\\[org-schedule]: schedule   "
-                   "\\[lc-gtd-schedule-today]: today   "
-                   "\\[lc-gtd-capture-done]: done")))))
+	  (substitute-command-keys
+	   (concat "\\<lc-gtd-capture-mode-map>"
+		   "\\[org-capture-kill]: cancel   "
+		   "\\[org-schedule]: schedule   "
+		   "\\[lc-gtd-schedule-today]: today   "
+		   "\\[lc-gtd-capture-done]: done")))))
 
 
 ;; this would ideally be placed inside a use-package entry, for now it's fine
 (add-hook 'lc-gtd-capture-mode-hook
-          (lambda ()
-            (when lc-gtd-capture-mode
-              (evil-emacs-state))))
+	  (lambda ()
+	    (when lc-gtd-capture-mode
+	      (evil-emacs-state))))
 
 (defconst lc-gtd-capture--frame-name "lc-org-gtd-capture"
   "Name of the dedicated capture frame; used to recognize it when closing.")
@@ -56,15 +56,17 @@ Runs from the capture template's `:after-finalize'."
 (defun lc-gtd-capture ()
   "Open `org-capture' in a dedicated frame; F8/F5 close it once you're done."
   (interactive)
-  (let ((frame (make-frame `((name . ,lc-gtd-capture--frame-name))))
-        (org-capture-templates (list (lc-gtd-capture--template))))
+  (let ((frame (make-frame `((name . ,lc-gtd-capture--frame-name)
+			     (width . 95)
+			     (height . 35))))
+	(org-capture-templates (list (lc-gtd-capture--template))))
     (with-selected-frame frame
       (org-capture nil "g")
       (delete-other-windows)
       ;; The capture buffer clones inbox.org's buffer, modes included, so
       ;; it can inherit `lc-gtd-inbox-mode', whose keys would win over ours.
       (when (bound-and-true-p lc-gtd-inbox-mode)
-        (lc-gtd-inbox-mode -1))
+	(lc-gtd-inbox-mode -1))
       (lc-gtd-capture-mode))))
 
 (provide 'lc-gtd-capture)

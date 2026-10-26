@@ -138,12 +138,16 @@ settings shared by every block.")
   "Show the GTD agenda: today, upcoming, done today, projects, and maybe.
 Reuse the agenda frame if one is open, otherwise make a new one."
   (interactive)
-  (select-frame-set-input-focus
-   (or (lc-gtd-agenda--frame)
-       (make-frame `((name . ,lc-gtd-agenda--frame-name)))))
-  (let ((org-agenda-custom-commands (list lc-gtd-agenda--view)))
+  (let ((existing (lc-gtd-agenda--frame))
+	(org-agenda-custom-commands (list lc-gtd-agenda--view)))
+    (select-frame-set-input-focus
+     (or existing
+	 (make-frame `((name . ,lc-gtd-agenda--frame-name)
+		       (width . 95)
+		       (height . 45)))))
     (org-agenda nil "g")
-    (delete-other-windows)))
+    (unless existing
+      (delete-other-windows))))
 
 (defun lc-gtd-agenda--set-header ()
   "Show the GTD view's keys in the header line.
