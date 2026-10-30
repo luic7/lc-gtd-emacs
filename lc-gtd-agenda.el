@@ -9,10 +9,10 @@ refreshes the agenda."
 			 (org-agenda-error))
     (org-todo keyword)
     (lc-gtd--schedule-next)
+    (save-buffer)
     (while (org-up-heading-safe))
-    (if (org-entry-is-done-p)
-	(lc-gtd-move-to lc-gtd-archive-file)
-      (save-buffer)))
+    (when (org-entry-is-done-p)
+      (lc-gtd-move-to lc-gtd-archive-file)))
   (org-agenda-redo))
 
 (defun lc-gtd-agenda-done ()

@@ -745,3 +745,17 @@ request)**
 - Reverted the same day at the user's request: the
   `x-wait-for-event-timeout` binding is gone, so a new agenda frame may
   again not get focus. Diagnosis above still applies if we revisit it.
+
+**2026-10-26 (Milestone 3): save the tasks file before archiving**
+- `lc-gtd-agenda--close`: `(save-buffer)` now runs right after
+  `lc-gtd--schedule-next`, before the move. The `if`'s else-branch save
+  was then redundant, so it became a `when`. `lc-gtd-move-to` still saves
+  after the refile (the refile removes the entry again).
+- Batch-tested: on a lone task, the file on disk already has DONE when the
+  refile starts.
+- Not done: `C-g` at the "Schedule …?" prompt quits and skips the save
+  (true before too). Fix if needed: also save before `--schedule-next`.
+  `lc-gtd-cleanup.el` has the same close/archive shape and was left as is;
+  could share a helper in utils.
+- Concepts: forms in a body run in order, and a `nil` return doesn't stop
+  them (only non-local exits do); `if` vs `when`.
